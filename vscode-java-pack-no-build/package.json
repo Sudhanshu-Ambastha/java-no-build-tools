@@ -1,0 +1,37 @@
+{
+  "name": "vscode-java-pack-no-build",
+  "displayName": "No-Build Java Power Pack 🛒☕",
+  "description": "The ultimate lightweight Java suite. Download JARs directly and run code instantly without Maven or Gradle.",
+  "version": "1.0.0",
+  "publisher": "sudhanshuambastha",
+  "license": "Apache-2.0",
+  "icon": "images/logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sudhanshu-Ambastha/Jar-Cart",
+    "directory": "vscode-java-pack-no-build"
+  },
+  "engines": {
+    "vscode": "^1.116.0"
+  },
+  "categories": [
+    "Extension Packs",
+    "Education",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "java",
+    "jar-cart",
+    "no-build",
+    "beginner",
+    "dependencies"
+  ],
+  "extensionPack": [
+    "sudhanshuambastha.jar-cart",
+    "redhat.java",
+    "vscjava.vscode-java-debug",
+    "vscjava.vscode-java-test",
+    "formulahendry.code-runner",
+    "oracle.oracle-java"
+  ]
+}

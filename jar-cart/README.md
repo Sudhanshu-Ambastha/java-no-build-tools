@@ -4,6 +4,8 @@ The **zero-config dependency manager for Java**. Search, select, and "checkout" 
 
 Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping.
 
+![How to setup](./images/example.gif)
+
 ## ✨ New in Version 1.0.0
 
 - **Smart Version Picker:** Don't just get the "latest." Pick the exact version (e.g., GSON 2.10.1) you need.
