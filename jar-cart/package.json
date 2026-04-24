@@ -3,8 +3,9 @@
   "displayName": "JAR Cart 🛒",
   "description": "Zero-config dependency manager for no-build Java projects. Search and download JARs instantly.",
   "version": "1.0.0",
-  "publisher": "SudhanshuAmbastha",
+  "publisher": "Sudhanshu-Ambastha",
   "license": "Apache-2.0",
+  "icon": "images/logo.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/SudhanshuAmbastha/Jar-Cart"
@@ -27,6 +28,9 @@
   "activationEvents": [
     "onLanguage:java",
     "workspaceContains:**/*.java"
+  ],
+  "extensionDependencies": [
+    "redhat.java"
   ],
   "main": "./extension.js",
   "contributes": {
