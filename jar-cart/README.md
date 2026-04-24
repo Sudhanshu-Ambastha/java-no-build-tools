@@ -1,65 +1,43 @@
-# jar-cart README
+# JAR Cart 🛒
 
-This is the README for your extension "jar-cart". After writing up a brief description, we recommend including the following sections.
+The **zero-config dependency manager for Java**. Search, select, and "checkout" JAR files directly into your project's `lib` folder. No Maven, no Gradle, no XML headaches.
 
-## Features
+Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## ✨ New in Version 1.0.0
 
-For example if there is an image subfolder under your extension project workspace:
+- **Smart Version Picker:** Don't just get the "latest." Pick the exact version (e.g., GSON 2.10.1) you need.
+- **Dependency Toggle:** Choose between **Surgical Mode** (Only selected JARs) or **Recursive Mode** (All required dependencies).
+- **Auto-Clean Hygiene:** Automatically detects and removes old/conflicting versions when you upgrade or downgrade.
+- **Status Bar Integration:** Real-time cart count at the bottom of your editor.
+- **Lightning Fast Shortcut:** Press `Ctrl + Shift + J` to start searching instantly.
 
-\!\[feature X\]\(images/feature-x.png\)
+## 🚀 How to Use
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. **Search:** Press `Ctrl + Shift + J` (or `Cmd + Shift + J` on Mac).
+2. **Add:** Search for a library (e.g., `poi-ooxml`), select the artifact, and pick your version.
+3. **Manage:** Click the **🛒 Cart** icon in the Status Bar to view or remove items.
+4. **Checkout:** Run `JAR Cart: Checkout`.
+   - Select **Direct JARs Only** for a lightweight `/lib`.
+   - Select **Include All Dependencies** for a fully-loaded, safe setup.
+5. **Purge:** Run `JAR Cart: Purge` to wipe the `/lib` folder and start fresh.
 
-## Requirements
+## 🛠️ Development & Setup
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+If you want to modify JAR Cart or build it from source:
 
-## Extension Settings
+1. **Install the VS Code Extension Generator:**
+   ```bash
+   npm install -g yo generator-code
+   ```
+2. **Clone the repo and install dependencies:**
+   ```bash
+   npm install axios fs-extra xml2js
+   ```
+3. **Launch:**
+   - Open the project in VS Code.
+   - Press `F5` to open the Extension Development Host.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+## ⚖️ License
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Distributed under the [Apache License 2.0](./LICENSE). See `LICENSE` for more information.

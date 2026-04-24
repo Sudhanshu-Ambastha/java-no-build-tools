@@ -1,42 +1,43 @@
-# Jar-Cart
+# JAR Cart 🛒
 
-The **zero-config dependency manager for Java beginners**. Search, select, and "checkout" JAR files directly into your project's `lib` folder. No Maven, no Gradle, no stress.
+The **zero-config dependency manager for Java**. Search, select, and "checkout" JAR files directly into your project's `lib` folder. No Maven, no Gradle, no XML headaches.
 
-Perfect for **"No Build Tool"** setups, college students, and quick prototyping where you just want to write code, not XML.
+Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping.
 
-## ✨ Features
+## ✨ New in Version 1.0.0
 
-- **Global Search:** Instant access to 10M+ JARs via the Maven Central API.
-- **The "Cart" System:** Search for multiple libraries (e.g., GSON, SQLite, MySQL) and add them to your cart before downloading.
-- **Bulk Checkout:** One command to download and organize everything into your project's /lib folder.
-- **Trusted Badges:** Visual ⭐ indicators for verified sources like Google, Apache, and Oracle (MySQL).
-- **Zero Config:** No pom.xml or build.gradle required. It just works.
+- **Smart Version Picker:** Don't just get the "latest." Pick the exact version (e.g., GSON 2.10.1) you need.
+- **Dependency Toggle:** Choose between **Surgical Mode** (Only selected JARs) or **Recursive Mode** (All required dependencies).
+- **Auto-Clean Hygiene:** Automatically detects and removes old/conflicting versions when you upgrade or downgrade.
+- **Status Bar Integration:** Real-time cart count at the bottom of your editor.
+- **Lightning Fast Shortcut:** Press `Ctrl + Shift + J` to start searching instantly.
 
 ## 🚀 How to Use
 
-1. Open your Java project folder in VS Code.
-2. Press `Ctrl + Shift + P` to open the Command Palette.
-3. Run `JAR Cart: Search & Add to Cart`.
-4. Select your libraries.
-5. Run `JAR Cart: Checkout` to drop the JARs into your project!
+1. **Search:** Press `Ctrl + Shift + J` (or `Cmd + Shift + J` on Mac).
+2. **Add:** Search for a library (e.g., `poi-ooxml`), select the artifact, and pick your version.
+3. **Manage:** Click the **🛒 Cart** icon in the Status Bar to view or remove items.
+4. **Checkout:** Run `JAR Cart: Checkout`.
+   - Select **Direct JARs Only** for a lightweight `/lib`.
+   - Select **Include All Dependencies** for a fully-loaded, safe setup.
+5. **Purge:** Run `JAR Cart: Purge` to wipe the `/lib` folder and start fresh.
 
 ## 🛠️ Development & Setup
 
-If you want to modify Jar-Cart or build it from source, use the following setup:
+If you want to modify JAR Cart or build it from source:
 
-1. Install the VS Code Extension Generator:
-   ```
+1. **Install the VS Code Extension Generator:**
+   ```bash
    npm install -g yo generator-code
    ```
-2. Scaffold/Initialize (if starting fresh):
+2. **Clone the repo and install dependencies:**
+   ```bash
+   npm install axios fs-extra xml2js
    ```
-   yo code
-   ```
-3. Install Required Dependencies:
-   ```
-   npm install axios fs-extra
-   ```
+3. **Launch:**
+   - Open the project in VS Code.
+   - Press `F5` to open the Extension Development Host.
 
-## 📜 License
+## ⚖️ License
 
-This project is licensed under the [MIT License](./LICENSE)—free to use, modify, and distribute.
+Distributed under the [Apache License 2.0](./LICENSE). See `LICENSE` for more information.

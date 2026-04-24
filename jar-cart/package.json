@@ -1,29 +1,63 @@
 {
   "name": "jar-cart",
-  "displayName": "jar-cart",
-  "description": "A zero-config JAR downloader for no-build Java projects.",
-  "version": "0.0.1",
+  "displayName": "JAR Cart 🛒",
+  "description": "Zero-config dependency manager for no-build Java projects. Search and download JARs instantly.",
+  "version": "1.0.0",
+  "publisher": "SudhanshuAmbastha",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SudhanshuAmbastha/Jar-Cart"
+  },
   "engines": {
     "vscode": "^1.116.0"
   },
   "categories": [
+    "Programming Languages",
+    "Education",
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "java",
+    "jar",
+    "maven",
+    "dependencies",
+    "no-build"
+  ],
+  "activationEvents": [
+    "onLanguage:java",
+    "workspaceContains:**/*.java"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
         "command": "jar-cart.add",
-        "title": "JAR Cart: Search & Add to Cart"
+        "title": "JAR Cart: Add to Cart"
+      },
+      {
+        "command": "jar-cart.view",
+        "title": "JAR Cart: View/Manage Cart"
       },
       {
         "command": "jar-cart.checkout",
-        "title": "JAR Cart: Checkout (Install All)"
+        "title": "JAR Cart: Checkout"
       },
       {
         "command": "jar-cart.clear",
         "title": "JAR Cart: Clear Cart"
+      },
+      {
+        "command": "jar-cart.purge",
+        "title": "JAR Cart: Purge lib folder"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "jar-cart.add",
+        "key": "ctrl+shift+j",
+        "mac": "cmd+shift+j",
+        "when": "editorTextFocus"
       }
     ]
   },
@@ -42,6 +76,7 @@
   },
   "dependencies": {
     "axios": "^1.15.2",
-    "fs-extra": "^11.3.4"
+    "fs-extra": "^11.3.4",
+    "xml2js": "^0.6.2"
   }
 }

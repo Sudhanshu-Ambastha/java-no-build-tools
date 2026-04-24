@@ -1,20 +1,22 @@
 # Change Log
 
-All notable changes to the **JAR Cart** extension will be documented in this file.
+All notable changes to the **JAR Cart** extension are documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
+## [1.0.0] - 2026-04-24
 
 ### Added
 
-- **Maven Central Integration**: Search for any Java library using the Maven Central API.
-- **The "Cart" Workflow**: Search and select multiple JARs before initiating a bulk download.
-- **Bulk Checkout**: Automatically downloads and organizes all selected JARs into a project `/lib` folder.
-- **Trusted Provider Logic**: Visual ⭐ indicators for verified sources like Google, Apache, and MySQL.
-- **Automatic Pathing**: Zero-config logic to transform Maven Group IDs into valid repository URLs.
+- **Maven Central Integration**: Instant access to millions of artifacts via the official Maven search API.
+- **The "Cart" System**: Interactive workflow to search, select, and manage multiple libraries before downloading.
+- **Recursive Dependency Solver**: New "Include All Dependencies" mode that parses POM files to download full runtime trees.
+- **Surgical Download Mode**: "Direct JARs Only" option for lightweight project structures without dependency bloat.
+- **Smart Conflict Resolution**: Automatic detection and cleanup of old/conflicting versions during upgrades or downgrades.
+- **Status Bar Integration**: Real-time cart counter for quick access and visibility.
+- **Enhanced UI**: Added a Version Picker to select specific historical releases of any library.
+- **Developer Productivity**: Global shortcut `Ctrl+Shift+J` (or `Cmd+Shift+J`) to trigger instant search.
+- **Library Hygiene**: Added a "Purge lib folder" command to wipe the workspace clean when needed.
 
-## [1.0.0] - 2026-04-23
+### Fixed
 
-- Initial functional release.
-- Support for project-level dependency management in "No-Build" environments.
+- Improved URL pathing logic for Group IDs containing dots (e.g., `org.apache.poi` -> `org/apache/poi`).
+- Fixed stream handling to ensure JAR files are fully written to disk before concluding the checkout.
