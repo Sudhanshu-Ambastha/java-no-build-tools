@@ -4,6 +4,9 @@ The **zero-config dependency manager for Java**. Search, select, and "checkout" 
 
 Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping.
 
+## 🎥 Tutorial
+
+Here’s a quick walkthrough of how to use JAR Cart:
 ![How to setup](./images/example.gif)
 
 ## ✨ New in Version 1.0.0

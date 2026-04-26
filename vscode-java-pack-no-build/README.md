@@ -13,13 +13,6 @@ This pack bundles the essential tools for a high-performance, lightweight Java e
 - **Oracle Java Platform**: Streamlined JDK management and additional language features.
 - **Test Runner for Java**: Easily run JUnit or TestNG tests.
 
-## 🛠️ How to use
-
-1. **Install this pack.**
-2. Open any folder or a single `.java` file.
-3. Use `Ctrl+Shift+J` (or `Cmd+Shift+J`) to open **JAR Cart** and add any libraries you need (like MySQL Connector or Gson).
-4. Click the **Run** icon at the top right or press **F5** to start coding!
-
 ## 🎯 Why this pack?
 
 Most Java setups force you into the "Enterprise" way of doing things (Maven/Gradle). This pack is built for the **Sovereign Developer** who values speed, simplicity, and logic over boilerplate configuration.
