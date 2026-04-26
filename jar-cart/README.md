@@ -1,31 +1,30 @@
 # JAR Cart 🛒
 
-The **zero-config dependency manager for Java**. Search, select, and "checkout" JAR files directly into your project's `lib` folder. No Maven, no Gradle, no XML headaches.
+The **Sovereign dependency manager for Java**. Search, select, and "checkout" JAR files directly into your project's `lib` folder. No Maven, no Gradle, no XML headaches.
 
-Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping.
+Perfect for **"No-Build"** setups, student assignments, and high-speed prototyping where you want **total control** over your classpath.
 
 ## 🎥 Tutorial
 
 Here’s a quick walkthrough of how to use JAR Cart:
 ![How to setup](https://raw.githubusercontent.com/Sudhanshu-Ambastha/java-no-build-tools/main/jar-cart/images/example.gif)
 
-## ✨ New in Version 1.0.0
+## ✨ New in Version 1.1.0
 
-- **Smart Version Picker:** Don't just get the "latest." Pick the exact version (e.g., GSON 2.10.1) you need.
-- **Dependency Toggle:** Choose between **Surgical Mode** (Only selected JARs) or **Recursive Mode** (All required dependencies).
-- **Auto-Clean Hygiene:** Automatically detects and removes old/conflicting versions when you upgrade or downgrade.
-- **Status Bar Integration:** Real-time cart count at the bottom of your editor.
-- **Lightning Fast Shortcut:** Press `Ctrl + Shift + J` to start searching instantly.
+- **Sovereign Manifest (`jar-cart.json`):** Your project now has a dedicated "Source of Truth." View exactly what is being installed and why.
+- **Selective Sync:** Delete unwanted sub-dependencies directly from the JSON tree before syncing to keep your `/lib` folder lean.
+- **Lockfile Stability:** Once you sync, your environment is locked. No unexpected updates or hidden downloads.
+- **Auto-Clean Hygiene:** The system automatically prunes and deletes JARs from your `/lib` folder that are no longer in your manifest.
+- **Smart Version Picker:** Pick specific historical releases of any library.
 
 ## 🚀 How to Use
 
-1. **Search:** Press `Ctrl + Shift + J` (or `Cmd + Shift + J` on Mac).
-2. **Add:** Search for a library (e.g., `poi-ooxml`), select the artifact, and pick your version.
-3. **Manage:** Click the **🛒 Cart** icon in the Status Bar to view or remove items.
-4. **Checkout:** Run `JAR Cart: Checkout`.
-   - Select **Direct JARs Only** for a lightweight `/lib`.
-   - Select **Include All Dependencies** for a fully-loaded, safe setup.
-5. **Purge:** Run `JAR Cart: Purge` to wipe the `/lib` folder and start fresh.
+1. **Search & Add:** Press `Ctrl + Shift + J` (or `Cmd + Shift + J` on Mac). Search for a library and pick your version.
+2. **Strategy Selection:** - Choose **Direct JARs Only** for a surgical setup.
+   - Choose **Include All Dependencies** to generate a full, nested tree in your manifest.
+3. **Review & Prune:** The `jar-cart.json` will open automatically. Feel free to delete any sub-dependency blocks you don't need! ✏️
+4. **Sync:** Run `JAR Cart: Sync from jar-cart.json`. This makes your physical `/lib` folder match your JSON perfectly.
+5. **View/Edit:** Click the **🛒 Cart** icon in the Status Bar to jump back into your manifest at any time.
 
 ## 🛠️ Development & Setup
 

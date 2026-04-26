@@ -2,10 +2,10 @@
 const vscode = require("vscode");
 const axios = require("axios");
 const fs = require("fs-extra");
-const path = require("path");
-const xml2js = require("xml2js");
+const path = require("node:path");
+const { saveManifest } = require("./manifest");
+const { downloadJars } = require("./downloader");
 
-/** @type {any[]} */
 let jarCart = [];
 let statusBarItem;
 
@@ -18,44 +18,7 @@ function updateStatusBar() {
   }
 }
 
-async function resolveDependencies(
-  doc,
-  allToDownload = new Set(),
-  visited = new Set(),
-) {
-  const depKey = `${doc.g}:${doc.a}:${doc.v}`;
-  if (visited.has(depKey)) return;
-  visited.add(depKey);
-  allToDownload.add(doc);
-  try {
-    const gPath = doc.g.replace(/\./g, "/");
-    const pomUrl = `https://repo1.maven.org/maven2/${gPath}/${doc.a}/${doc.v}/${doc.a}-${doc.v}.pom`;
-    const res = await axios.get(pomUrl);
-    const parser = new xml2js.Parser({ explicitArray: false });
-    const result = await parser.parseStringPromise(res.data);
-    let deps = result.project.dependencies?.dependency;
-    if (!deps) return;
-    if (!Array.isArray(deps)) deps = [deps];
-    for (const dep of deps) {
-      const scope = dep.scope || "compile";
-      if (["compile", "runtime"].includes(scope) && dep.optional !== "true") {
-        let version = dep.version || doc.v;
-        if (version.includes("${")) version = doc.v;
-        await resolveDependencies(
-          { g: dep.groupId, a: dep.artifactId, v: version },
-          allToDownload,
-          visited,
-        );
-      }
-    }
-  } catch (err) {
-    console.error(`Dep Error: ${doc.a}`);
-  }
-}
-
 function activate(context) {
-  console.log("JAR Cart Pro is active! 🛒");
-
   statusBarItem = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right,
     100,
@@ -63,188 +26,126 @@ function activate(context) {
   statusBarItem.command = "jar-cart.view";
   context.subscriptions.push(statusBarItem);
 
-  let addCommand = vscode.commands.registerCommand(
-    "jar-cart.add",
-    async function () {
-      const query = await vscode.window.showInputBox({
-        prompt: "Search Maven (Ctrl+Shift+J)",
-        placeHolder: "e.g. gson, poi, sqlite",
-      });
-      if (!query) return;
+  const addCmd = vscode.commands.registerCommand("jar-cart.add", async () => {
+    const query = await vscode.window.showInputBox({ prompt: "Search Maven" });
+    if (!query) return;
+    try {
+      const res = await axios.get(
+        `https://search.maven.org/solrsearch/select`,
+        {
+          params: { q: query, rows: 20, wt: "json" },
+          headers: { "User-Agent": "JarCart-VSCode/1.0.3" },
+        },
+      );
+      const docs = res.data.response.docs;
+      const pick = await vscode.window.showQuickPick(
+        docs.map((d) => ({ label: d.a, description: d.g, doc: d })),
+      );
+      if (!pick) return;
 
-      try {
-        const url = `https://search.maven.org/solrsearch/select?q=${encodeURIComponent(query)}&rows=20&wt=json&sort=score`;
-        const res = await axios.get(url);
-        const docs = res.data.response.docs;
-        if (docs.length === 0)
-          return vscode.window.showErrorMessage("No JARs found.");
+      const vRes = await axios.get(
+        `https://search.maven.org/solrsearch/select`,
+        {
+          params: {
+            q: `g:${pick.doc.g} AND a:${pick.doc.a}`,
+            core: "gav",
+            rows: 10,
+            wt: "json",
+          },
+          headers: { "User-Agent": "JarCart-VSCode/1.0.3" },
+        },
+      );
+      const ver = await vscode.window.showQuickPick(
+        vRes.data.response.docs.map((d) => d.v),
+      );
 
-        const selectedBase = await vscode.window.showQuickPick(
-          docs.map((d) => ({ label: d.a, description: d.g, doc: d })),
-          { placeHolder: "Select a library" },
-        );
-        if (!selectedBase) return;
-
-        const vUrl = `https://search.maven.org/solrsearch/select?q=g:${selectedBase.doc.g} AND a:${selectedBase.doc.a}&core=gav&rows=10&wt=json`;
-        const vRes = await axios.get(vUrl);
-        const versions = vRes.data.response.docs.map((d) => d.v);
-
-        const selectedVersion = await vscode.window.showQuickPick(versions, {
-          placeHolder: `Select version for ${selectedBase.doc.a}`,
-        });
-
-        if (selectedVersion) {
-          jarCart.push({
-            g: selectedBase.doc.g,
-            a: selectedBase.doc.a,
-            v: selectedVersion,
-          });
-          updateStatusBar();
-          vscode.window.showInformationMessage(
-            `Added ${selectedBase.doc.a} 🛒`,
-          );
-        }
-      } catch (err) {
-        vscode.window.showErrorMessage("Maven Search Failed.");
-      }
-    },
-  );
-
-  let viewCommand = vscode.commands.registerCommand(
-    "jar-cart.view",
-    async function () {
-      if (jarCart.length === 0)
-        return vscode.window.showInformationMessage("Cart is empty.");
-
-      const items = jarCart.map((item, index) => ({
-        label: `$(file-zip) ${item.a}`,
-        description: `v${item.v}`,
-        detail: `Group: ${item.g} (Select to REMOVE)`,
-        index: index,
-      }));
-
-      const toRemove = await vscode.window.showQuickPick(items, {
-        placeHolder: "Your Cart Items (Click an item to remove it from cart)",
-      });
-
-      if (toRemove) {
-        jarCart.splice(toRemove.index, 1);
+      if (ver) {
+        jarCart.push({ group: pick.doc.g, library: pick.doc.a, version: ver });
         updateStatusBar();
-        vscode.window.showInformationMessage(
-          `Removed ${toRemove.label} from cart.`,
+
+        const strategy = await vscode.window.showQuickPick(
+          ["Direct JARs Only", "Include All Dependencies"],
+          { placeHolder: "Generate manifest with dependencies?" },
         );
+
+        if (strategy) {
+          await saveManifest(jarCart, strategy);
+          vscode.window.showInformationMessage(
+            `Manifest updated! Run 'Sync' when ready to install. ✏️`,
+          );
+          vscode.commands.executeCommand("jar-cart.view");
+        }
       }
-    },
-  );
+    } catch (e) {
+      vscode.window.showErrorMessage("Search Failed");
+    }
+  });
 
-  let checkoutCommand = vscode.commands.registerCommand(
+  const checkoutCmd = vscode.commands.registerCommand(
     "jar-cart.checkout",
-    async function () {
-      if (jarCart.length === 0) return;
-      const workspaceFolders = vscode.workspace.workspaceFolders;
-      if (!workspaceFolders) return;
-
-      const mode = await vscode.window.showQuickPick(
-        [
-          { label: "Direct JARs Only", detail: "Fast & Light" },
-          { label: "Include All Dependencies", detail: "Safest" },
-        ],
-        { placeHolder: "Download Strategy" },
-      );
-      if (!mode) return;
-      const includeDeps = mode.label.includes("Include All");
-
-      const libDir = path.join(workspaceFolders[0].uri.fsPath, "lib");
-      await fs.ensureDir(libDir);
-
-      const finalDownloadList = new Set();
-      const visited = new Set();
-
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: "Resolving...",
-        },
-        async () => {
-          if (includeDeps) {
-            for (const item of jarCart)
-              await resolveDependencies(item, finalDownloadList, visited);
-          } else {
-            jarCart.forEach((i) => finalDownloadList.add(i));
-          }
-        },
-      );
-
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: `Downloading...`,
-        },
-        async (progress) => {
-          const existingFiles = await fs.readdir(libDir);
-          for (const doc of finalDownloadList) {
-            const fileName = `${doc.a}-${doc.v}.jar`;
-            const gPath = doc.g.replace(/\./g, "/");
-            const url = `https://repo1.maven.org/maven2/${gPath}/${doc.a}/${doc.v}/${fileName}`;
-
-            const conflictRegex = new RegExp(`^${doc.a}-.*\\.jar$`);
-            for (const f of existingFiles) {
-              if (conflictRegex.test(f) && f !== fileName)
-                await fs.remove(path.join(libDir, f));
-            }
-
-            try {
-              const response = await axios({ url, responseType: "stream" });
-              const writer = fs.createWriteStream(path.join(libDir, fileName));
-              response.data.pipe(writer);
-              await new Promise((res, rej) => {
-                writer.on("finish", res);
-                writer.on("error", rej);
-              });
-            } catch (e) {}
-          }
-        },
-      );
-
-      vscode.window.showInformationMessage("Success! 🎉");
-      jarCart = [];
-      updateStatusBar();
+    async () => {
+      vscode.commands.executeCommand("jar-cart.sync");
     },
   );
 
-  let purgeCommand = vscode.commands.registerCommand(
+  const syncCmd = vscode.commands.registerCommand("jar-cart.sync", async () => {
+    const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    if (!root) return;
+    const configPath = path.join(root, "jar-cart.json");
+    if (!(await fs.pathExists(configPath)))
+      return vscode.window.showErrorMessage("No manifest found.");
+
+    const config = await fs.readJson(configPath);
+    const libDir = path.join(root, "lib");
+    await fs.ensureDir(libDir);
+
+    await vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "Syncing /lib with Manifest...",
+      },
+      async () => {
+        await downloadJars(config.dependencies, libDir);
+      },
+    );
+
+    vscode.window.showInformationMessage("Environment Synced! 🏁");
+    jarCart = [];
+    updateStatusBar();
+  });
+
+  const viewCmd = vscode.commands.registerCommand("jar-cart.view", async () => {
+    const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+    if (!root) return;
+    const configPath = path.join(root, "jar-cart.json");
+    if (await fs.pathExists(configPath)) {
+      const doc = await vscode.workspace.openTextDocument(configPath);
+      await vscode.window.showTextDocument(doc);
+      vscode.window.showInformationMessage(
+        "Edit dependencies, then run 'Sync' to apply. ✏️",
+      );
+    } else {
+      vscode.window.showInformationMessage("Cart is empty.");
+    }
+  });
+
+  const purgeCmd = vscode.commands.registerCommand(
     "jar-cart.purge",
     async () => {
-      const workspaceFolders = vscode.workspace.workspaceFolders;
-      if (!workspaceFolders) return;
-      const libDir = path.join(workspaceFolders[0].uri.fsPath, "lib");
+      const root = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+      const libDir = path.join(root || "", "lib");
       if (await fs.pathExists(libDir)) {
         const confirm = await vscode.window.showWarningMessage(
           "Wipe lib folder?",
           "Yes",
           "No",
         );
-        if (confirm === "Yes") {
-          await fs.emptyDir(libDir);
-          vscode.window.showInformationMessage("Purged.");
-        }
+        if (confirm === "Yes") await fs.emptyDir(libDir);
       }
     },
   );
 
-  let clearCommand = vscode.commands.registerCommand("jar-cart.clear", () => {
-    jarCart = [];
-    updateStatusBar();
-    vscode.window.showInformationMessage("Cart cleared.");
-  });
-
-  context.subscriptions.push(
-    addCommand,
-    checkoutCommand,
-    clearCommand,
-    purgeCommand,
-    viewCommand,
-  );
+  context.subscriptions.push(addCmd, checkoutCmd, syncCmd, viewCmd, purgeCmd);
 }
 
 module.exports = { activate, deactivate: () => {} };

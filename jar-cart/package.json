@@ -1,8 +1,8 @@
 {
   "name": "jar-cart-sa",
   "displayName": "JAR Cart 🛒 (SA)",
-  "description": "Zero-config dependency manager for no-build Java projects. Search and download JARs instantly.",
-  "version": "1.0.2",
+  "description": "Sovereign dependency manager for no-build Java projects. Lockfile support with granular control.",
+  "version": "1.1.0",
   "publisher": "sudhanshuambastha",
   "license": "Apache-2.0",
   "icon": "images/logo.png",
@@ -24,7 +24,8 @@
     "jar",
     "maven",
     "dependencies",
-    "no-build"
+    "no-build",
+    "sovereign"
   ],
   "activationEvents": [
     "onLanguage:java",
@@ -41,16 +42,16 @@
         "title": "JAR Cart: Add to Cart"
       },
       {
-        "command": "jar-cart.view",
-        "title": "JAR Cart: View/Manage Cart"
-      },
-      {
         "command": "jar-cart.checkout",
-        "title": "JAR Cart: Checkout"
+        "title": "JAR Cart: Checkout (Sync to lib/)"
       },
       {
-        "command": "jar-cart.clear",
-        "title": "JAR Cart: Clear Cart"
+        "command": "jar-cart.sync",
+        "title": "JAR Cart: Sync from jar-cart.json"
+      },
+      {
+        "command": "jar-cart.view",
+        "title": "JAR Cart: View Cart (Manifest)"
       },
       {
         "command": "jar-cart.purge",
