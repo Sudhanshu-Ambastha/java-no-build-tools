@@ -7,7 +7,7 @@ Perfect for **"No-Build"** setups, student assignments, and high-speed prototypi
 ## 🎥 Tutorial
 
 Here’s a quick walkthrough of how to use JAR Cart:
-![How to setup](./images/example.gif)
+![How to setup](https://raw.githubusercontent.com/Sudhanshu-Ambastha/java-no-build-tools/main/jar-cart/images/example.gif)
 
 ## ✨ New in Version 1.0.0
 
